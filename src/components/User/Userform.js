@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
-  mockFetchCountries,
+  fetchCountries,
   mockFetchCountryCode,
   mockFetchRoles,
   mockFetchSupervisors,
@@ -11,14 +11,13 @@ import { addItem } from "../APIs/StorageAPI";
 
 function Userform({ setIsOpen }) {
   const queryClient = useQueryClient();
-
   const {
     isLoading: isLoadingCountries,
     error: errorCountries,
     data: countries,
   } = useQuery({
     queryKey: ["countries"],
-    queryFn: mockFetchCountries,
+    queryFn: fetchCountries,
   });
 
   const {

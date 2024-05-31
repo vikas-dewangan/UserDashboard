@@ -3,14 +3,28 @@ import axios from "axios";
 export const fetchCountries = async () => {
   try {
     const response = await axios.get(
-      "https://restcountries-v1.p.rapidapi.com/callingcode/57"
+      "https://api.first.org/data/v1/countries?region=asia"
     );
-    console.log(response);
+
+    const countryData = response?.data?.data;
+    if (countryData && Object.keys(countryData).length > 0) {
+      return Promise.resolve(
+        Object.entries(countryData).map(([code, { country }], index) => ({
+          value: country,
+          code,
+          id: index
+        }))
+      );
+    } else {
+      return Promise.resolve([]);
+    }
   } catch (error) {
     console.error("Error fetching countries:", error);
+    return Promise.reject(error);
   }
 };
 
+// country test data
 export function mockFetchCountries() {
   return new Promise((resolve) => {
     setTimeout(() => {
