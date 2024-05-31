@@ -1,0 +1,28 @@
+  .table thead th {
+      background-color: var(--bs-my-gray);
+      color: #939393;
+  }
+
+  .status-type {
+      border: 1px solid black;
+  }
+
+  .button-without-pointer {
+    cursor: auto;
+  }
+
+  .custom-width-button {
+    width: 100%
+  }
+
+  .table{
+    text-align: center;
+  }
+
+  .thead{
+    height: 20px;
+  }
+
+  .search-row th{
+    background-color: white !important;
+  }

@@ -1,0 +1,33 @@
+.side-drawer {
+    width: 0;
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100%;
+    background-color: #f8f9fa;
+    transition: 0.5s;
+    z-index: 1000;
+  }
+  
+  .side-drawer.open {
+    width: 30rem;
+    @media (max-width: 767px) {
+      width: 20rem;
+    }
+    @media (max-width: 310px) {
+      width: 15rem;
+    }
+  }
+
+  
+  .drawer-content {
+    padding: 20px;
+  }
+  
+  .toggle-button {
+    position: fixed;
+    left: 10px;
+    top: 10px;
+    z-index: 1001;
+  }
+  
