@@ -77,7 +77,7 @@ function Userform({ setIsOpen }) {
   const getDropDown = (isLoading, error, data, id, name = "") => {
     return (
       <div className="form-group">
-        {name && <label htmlFor={id}>{name}</label>}
+        {name && <label htmlFor={id}>{name}<span style={{color:"red"}}> *</span></label>}
         {isLoading ? (
           <select id={id} className="form-control" disabled>
             <option>Loading...</option>
@@ -118,7 +118,7 @@ function Userform({ setIsOpen }) {
   const inputField = (id, name = "", validation = {}) => {
     return (
       <div className="form-group">
-        {name && <label htmlFor={id}>{name}</label>}
+        {name && <label htmlFor={id}>{name}<span style={{color:"red"}}> *</span></label>}
         <Controller
           name={id}
           control={control}
@@ -144,7 +144,7 @@ function Userform({ setIsOpen }) {
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="container">
         {/* Country */}
-        <div className="row">
+        <div className="row mt-3">
           <div className="col-md-12">
             {getDropDown(
               isLoadingCountries,
@@ -157,7 +157,7 @@ function Userform({ setIsOpen }) {
         </div>
 
         {/* Role */}
-        <div className="row">
+        <div className="row mt-3">
           <div className="col-md-12">
             {getDropDown(
               isLoadingRoles,
@@ -170,7 +170,7 @@ function Userform({ setIsOpen }) {
         </div>
 
         {/* Super Visor */}
-        <div className="row">
+        <div className="row mt-3">
           <div className="col-md-12">
             {getDropDown(
               isLoadingSupervisors,
@@ -183,22 +183,22 @@ function Userform({ setIsOpen }) {
         </div>
 
         {/* Name */}
-        <div className="row">
+        <div className="row mt-3">
           <div className="col-md-6">
             {inputField("firstname", "First Name", {
-              pattern: { value: /^[A-Za-z]+$/, message: "Invalid first name" },
+              pattern: { value: /^[A-Za-z]{3,}$/, message: "Invalid first name" },
             })}
           </div>
           <div className="col-md-6">
             {inputField("lastname", "Last Name", {
-              pattern: { value: /^[A-Za-z]+$/, message: "Invalid last name" },
+              pattern: { value: /^[A-Za-z]{3,}$/, message: "Invalid last name" },
             })}
           </div>
         </div>
 
         {/* Mobile Number */}
-        <div className="row">
-          <label>Mobile Number</label>
+        <div className="row mt-3">
+          <label>Mobile Number <span style={{color:"red"}}> *</span></label>
           <div className="col-md-12">
             <div className="d-flex">
               <div style={{ flexGrow: "1" }}>
@@ -214,7 +214,7 @@ function Userform({ setIsOpen }) {
               <div style={{ flexGrow: "1" }}>
                 {inputField("mobilenumber", undefined, {
                   pattern: {
-                    value: /^[0-9]{10,15}$/,
+                    value: /^[0-9]{5,15}$/,
                     message: "Invalid mobile number",
                   },
                 })}
@@ -224,7 +224,7 @@ function Userform({ setIsOpen }) {
         </div>
 
         {/* Email */}
-        <div className="row">
+        <div className="row mt-3">
           <div className="col-md-12">
             {inputField("email", "Email", {
               pattern: {
@@ -236,10 +236,10 @@ function Userform({ setIsOpen }) {
         </div>
 
         {/* Card Limit */}
-        <div className="row">
+        <div className="row mt-3">
           <div className="col-md-6">
             {inputField("cardlimit", "Card Load Limit",{ pattern: {
-                    value: /^[0-9]$/,
+                    value: /^[0-9]+$/,
                     message: "Invalid Card Load Limit",
                   },})}
           </div>
@@ -247,7 +247,7 @@ function Userform({ setIsOpen }) {
           {/* Payment Limit */}
           <div className="col-md-6">
             {inputField("paymentlimit", "Payment Limit",{ pattern: {
-                    value: /^[0-9]$/,
+                    value: /^[0-9]+$/,
                     message: "Invalid Payment Limit",
                   },})}
           </div>
@@ -256,7 +256,7 @@ function Userform({ setIsOpen }) {
 
       {/* Buttons */}
       <div className="container mt-4">
-        <div className="row">
+        <div className="row mt-3">
           <div className="col-md-12 d-flex">
             <button type="submit" className="btn btn-primary">
               + Add User
