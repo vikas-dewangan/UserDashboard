@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
@@ -7,8 +7,11 @@ import {
   mockFetchRoles,
   mockFetchSupervisors,
 } from "../APIs/ApiHelper";
+import { addItem } from "../APIs/StorageAPI";
 
-function Userform({ onSubmit, setIsOpen }) {
+function Userform({ setIsOpen }) {
+  const queryClient = useQueryClient();
+
   const {
     isLoading: isLoadingCountries,
     error: errorCountries,
@@ -45,7 +48,31 @@ function Userform({ onSubmit, setIsOpen }) {
     queryFn: mockFetchCountryCode,
   });
 
-  const { reset, control, handleSubmit, formState: { errors }} = useForm();
+  const {
+    mutate,
+    isError: isPostError,
+    isPending,
+    error: postError,
+    reset: postReset,
+  } = useMutation({
+    mutationFn: addItem,
+    onSuccess: () => {
+      queryClient.invalidateQueries(["userData"]);
+    },
+  });
+
+  const {
+    reset: formReset,
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  const onSubmit = (data) => {
+    mutate({ ...data, status: "Active" });
+    formReset();
+    setIsOpen(false);
+  };
 
   const getDropDown = (isLoading, error, data, id, name = "") => {
     return (
@@ -67,7 +94,7 @@ function Userform({ onSubmit, setIsOpen }) {
               render={({ field }) => (
                 <select
                   id={id}
-                  className={`form-control ${errors[id] ? 'is-invalid' : ''}`}
+                  className={`form-control ${errors[id] ? "is-invalid" : ""}`}
                   {...field}
                 >
                   <option value="">Select</option>
@@ -79,14 +106,16 @@ function Userform({ onSubmit, setIsOpen }) {
                 </select>
               )}
             />
-            {errors[id] && <div className="invalid-feedback">{errors[id].message}</div>}
+            {errors[id] && (
+              <div className="invalid-feedback">{errors[id].message}</div>
+            )}
           </>
         )}
       </div>
     );
   };
 
-  const inputField = (id, name = "") => {
+  const inputField = (id, name = "", validation = {}) => {
     return (
       <div className="form-group">
         {name && <label htmlFor={id}>{name}</label>}
@@ -94,17 +123,19 @@ function Userform({ onSubmit, setIsOpen }) {
           name={id}
           control={control}
           defaultValue=""
-          rules={{ required: `${name || id} is required` }}
+          rules={{ required: `${name || id} is required`, ...validation }}
           render={({ field }) => (
             <input
               type="text"
               id={id}
-              className={`form-control ${errors[id] ? 'is-invalid' : ''}`}
+              className={`form-control ${errors[id] ? "is-invalid" : ""}`}
               {...field}
             />
           )}
         />
-        {errors[id] && <div className="invalid-feedback">{errors[id].message}</div>}
+        {errors[id] && (
+          <div className="invalid-feedback">{errors[id].message}</div>
+        )}
       </div>
     );
   };
@@ -112,6 +143,7 @@ function Userform({ onSubmit, setIsOpen }) {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="container">
+        {/* Country */}
         <div className="row">
           <div className="col-md-12">
             {getDropDown(
@@ -124,18 +156,20 @@ function Userform({ onSubmit, setIsOpen }) {
           </div>
         </div>
 
+        {/* Role */}
         <div className="row">
           <div className="col-md-12">
             {getDropDown(
               isLoadingRoles,
               errorRoles,
               roles,
-              "roles",
+              "role",
               "Select Role"
             )}
           </div>
         </div>
 
+        {/* Super Visor */}
         <div className="row">
           <div className="col-md-12">
             {getDropDown(
@@ -148,13 +182,21 @@ function Userform({ onSubmit, setIsOpen }) {
           </div>
         </div>
 
+        {/* Name */}
         <div className="row">
           <div className="col-md-6">
-            {inputField("firstname", "First Name")}
+            {inputField("firstname", "First Name", {
+              pattern: { value: /^[A-Za-z]+$/, message: "Invalid first name" },
+            })}
           </div>
-          <div className="col-md-6">{inputField("lastname", "Last Name")}</div>
+          <div className="col-md-6">
+            {inputField("lastname", "Last Name", {
+              pattern: { value: /^[A-Za-z]+$/, message: "Invalid last name" },
+            })}
+          </div>
         </div>
 
+        {/* Mobile Number */}
         <div className="row">
           <label>Mobile Number</label>
           <div className="col-md-12">
@@ -167,22 +209,47 @@ function Userform({ onSubmit, setIsOpen }) {
                   "countryCode"
                 )}
               </div>
-              <div style={{ flexGrow: "1" }}>{inputField("mobilenumber")}</div>
+
+              {/* since we have different country code, having only a normal regex check for mobile */}
+              <div style={{ flexGrow: "1" }}>
+                {inputField("mobilenumber", undefined, {
+                  pattern: {
+                    value: /^[0-9]{10,15}$/,
+                    message: "Invalid mobile number",
+                  },
+                })}
+              </div>
             </div>
           </div>
         </div>
 
+        {/* Email */}
         <div className="row">
-          <div className="col-md-12">{inputField("email", "Email")}</div>
+          <div className="col-md-12">
+            {inputField("email", "Email", {
+              pattern: {
+                value: /^[^@\s]+@[^@\s]+\.[^@\s]+$/,
+                message: "Invalid email address",
+              },
+            })}
+          </div>
         </div>
 
+        {/* Card Limit */}
         <div className="row">
           <div className="col-md-6">
-            {inputField("cardlimit", "Card Load Limit")}
+            {inputField("cardlimit", "Card Load Limit",{ pattern: {
+                    value: /^[0-9]$/,
+                    message: "Invalid Card Load Limit",
+                  },})}
           </div>
 
+          {/* Payment Limit */}
           <div className="col-md-6">
-            {inputField("paymentlimit", "Payment Limit")}
+            {inputField("paymentlimit", "Payment Limit",{ pattern: {
+                    value: /^[0-9]$/,
+                    message: "Invalid Payment Limit",
+                  },})}
           </div>
         </div>
       </div>
@@ -201,7 +268,7 @@ function Userform({ onSubmit, setIsOpen }) {
               onClick={(e) => {
                 e.preventDefault();
                 setIsOpen(false);
-                reset();
+                formReset();
               }}
             >
               Cancel
