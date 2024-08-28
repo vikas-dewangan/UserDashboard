@@ -3,7 +3,7 @@ import axios from "axios";
 export const fetchCountries = async () => {
   try {
     const response = await axios.get(
-      "https://api.first.org/data/v1/countries?region=asia"
+      "https://api.first.org/data/v1/countries"
     );
 
     const countryData = response?.data?.data;
