@@ -12,17 +12,28 @@ export const fetchCountries = async () => {
         Object.entries(countryData).map(([code, { country }], index) => ({
           value: country,
           code,
-          id: index
+          id: index,
         }))
       );
     } else {
-      return Promise.resolve([]);
+      // Default list if no data is returned
+      return Promise.resolve([
+        { value: "Country 1", id: 1, code: "ONE" },
+        { value: "Country 2", id: 2, code: "TWO" },
+        { value: "Country 3", id: 3, code: "THREE" },
+      ]);
     }
   } catch (error) {
     console.error("Error fetching countries:", error);
-    return Promise.reject(error);
+    // Default list if an error occurs
+    return Promise.resolve([
+      { value: "Country 1", id: 1, code: "ONE" },
+      { value: "Country 2", id: 2, code: "TWO" },
+      { value: "Country 3", id: 3, code: "THREE" },
+    ]);
   }
 };
+
 
 // country test data
 export function mockFetchCountries() {
